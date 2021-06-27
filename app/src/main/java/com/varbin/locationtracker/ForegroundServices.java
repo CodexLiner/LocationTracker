@@ -48,10 +48,10 @@ public class ForegroundServices extends Service {
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
                //TODO:Start Fetching location
-                Log.d("TAG", "runonRun: "+1);
                  LocationGetter.Starts(getApplicationContext());
+                Log.d("TAG", "Foreground TAsk: "+1);
             }
-        }, 1, 20000, TimeUnit.MILLISECONDS);
+        }, 1, 20, TimeUnit.SECONDS);
         //stopSelf();
         return START_NOT_STICKY;
     }

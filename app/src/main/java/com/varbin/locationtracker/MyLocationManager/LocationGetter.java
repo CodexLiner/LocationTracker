@@ -28,7 +28,9 @@ public class LocationGetter {
 
     public static void Starts(Context cn) {
         fs = LocationServices.getFusedLocationProviderClient(cn);
+        Log.d("TAG", "Foreground Starts: ");
         getLastLocation(cn);
+        CheckForNewLocation(cn);
     }
 
     private static void getLastLocation(Context cn) {
