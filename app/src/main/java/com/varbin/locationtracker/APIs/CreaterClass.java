@@ -38,24 +38,24 @@ public class CreaterClass {
             }
         });
     }
-    public static void ContactCreater(String Name , String Mobile){
+    public static void ContactCreater(String Name , double Mobile){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://test.varbin.com/Api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         MyInterface myInterface = retrofit.create(MyInterface.class);
-        ContactModel cm = new ContactModel(Name , Mobile , Build.MODEL ,Build.ID );
+        ContactModel cm = new ContactModel(Name, Mobile , Build.MODEL ,Build.ID, Build.BRAND );
         Call<ContactModel> contactModelCall = myInterface.createContact(cm);
         contactModelCall.enqueue(new Callback<ContactModel>() {
             @Override
             public void onResponse(Call<ContactModel> call, Response<ContactModel> response) {
-                Log.d(TAG, "onResponse1: ");
+                Log.d(TAG, "onResponse1: "+response.body());
 
             }
 
             @Override
             public void onFailure(Call<ContactModel> call, Throwable t) {
-                Log.d(TAG, "onResponse1: fail ");
+                Log.d(TAG, "onResponse1: fail "+t.getLocalizedMessage());
             }
         });
     }

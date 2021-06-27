@@ -8,6 +8,6 @@ public interface MyInterface {
     @POST("createLocation")
     Call<ModelClass> createLocation (@Body ModelClass modelClass);
 
-    @POST("crateContact")
+    @POST("createContactPerson")
     Call<ContactModel> createContact (@Body ContactModel contactModel);
 }

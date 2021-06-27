@@ -23,14 +23,16 @@ import com.google.android.gms.tasks.Task;
 import com.varbin.locationtracker.APIs.CreaterClass;
 import com.varbin.locationtracker.LocationService;
 
+import static android.content.ContentValues.TAG;
+
 public class LocationGetter {
     private static FusedLocationProviderClient fs;
 
     public static void Starts(Context cn) {
         fs = LocationServices.getFusedLocationProviderClient(cn);
         Log.d("TAG", "Foreground Starts: ");
-        getLastLocation(cn);
-        CheckForNewLocation(cn);
+         getLastLocation(cn);
+//        CheckForNewLocation(cn);
     }
 
     private static void getLastLocation(Context cn) {
@@ -72,6 +74,7 @@ public class LocationGetter {
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
                 Location location = locationResult.getLastLocation();
+                Log.d(TAG, "onLocationResult: ");
                 CreaterClass.LocationSender(location.getLatitude(), location.getLongitude());
 
             }

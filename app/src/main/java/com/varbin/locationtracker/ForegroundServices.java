@@ -47,11 +47,10 @@ public class ForegroundServices extends Service {
         ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
-               //TODO:Start Fetching location
-                 LocationGetter.Starts(getApplicationContext());
                 Log.d("TAG", "Foreground TAsk: "+1);
+                LocationGetter.Starts(getApplicationContext());
             }
-        }, 1, 20, TimeUnit.SECONDS);
+        }, 1, 5, TimeUnit.SECONDS);
         //stopSelf();
         return START_NOT_STICKY;
     }
