@@ -21,12 +21,7 @@ import com.google.android.gms.location.LocationServices;
 public class MainActivity extends AppCompatActivity {
     static MainActivity ins;
     String Name, Email, Mobile;
-    LocationRequest locationRequest;
-    FusedLocationProviderClient MyClient;
     TextView textView;
-    public static MainActivity getInstance() {
-        return ins;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,46 +33,30 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.textView);
         startService(new Intent(getApplicationContext(), LocationService.class));
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            LocationShowerAndSender();
+            startService();
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
-
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1 && (grantResults.length > 0) && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            LocationShowerAndSender();
+            startService();
         } else {
             Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
         }
     }
-    private void LocationShowerAndSender() {
-        LocationSetter();
-        MyClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        MyClient.requestLocationUpdates(locationRequest, getIn());
-    }
-    private PendingIntent getIn() {
-       Intent intent  = new Intent(this , BroadCastReceiver.class);
-       intent.setAction(BroadCastReceiver.s);
-       return PendingIntent.getBroadcast(this , 0, intent , PendingIntent.FLAG_UPDATE_CURRENT);
-    }
-    private void LocationSetter() {
-        locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(5);
-        locationRequest.setFastestInterval(3);
-        locationRequest.setSmallestDisplacement(10f);
-    }
+
     public void startService() {
         Intent serviceIntent = new Intent(this, ForegroundServices.class);
-        serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android");
+        serviceIntent.putExtra("inputExtra", "Your Location is live");
         ContextCompat.startForegroundService(this, serviceIntent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+       finishAffinity();
     }
 }

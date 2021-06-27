@@ -71,6 +71,13 @@ public class RegistrationActivity extends AppCompatActivity {
         editor.putString("Name" , ename);
         editor.commit();
         editor.apply();
+        startActivity(new Intent(getApplicationContext() , MainActivity.class));
+        overridePendingTransition(0,0);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

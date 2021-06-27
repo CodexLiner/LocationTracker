@@ -1,18 +1,24 @@
 package com.varbin.locationtracker;
 
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
+import com.varbin.locationtracker.MyLocationManager.LocationGetter;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,9 +38,9 @@ public class ForegroundServices extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Foreground Service")
+                .setContentTitle("Accessing Location")
                 .setContentText(input)
-                .setSmallIcon(R.drawable.ic_baseline_person_24)
+                .setSmallIcon(R.drawable.ic_baseline_add_location_alt_24)
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1, notification);
@@ -42,9 +48,10 @@ public class ForegroundServices extends Service {
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
                //TODO:Start Fetching location
-               LocationGetter.
+                Log.d("TAG", "runonRun: "+1);
+                 LocationGetter.Starts(getApplicationContext());
             }
-        }, 1, 2000, TimeUnit.MILLISECONDS);
+        }, 1, 20000, TimeUnit.MILLISECONDS);
         //stopSelf();
         return START_NOT_STICKY;
     }
@@ -69,4 +76,14 @@ public class ForegroundServices extends Service {
         }
     }
 
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        Intent in = new Intent(getApplicationContext() , this.getClass());
+        in.setPackage(getPackageName());
+        PendingIntent rs = PendingIntent.getService(getApplicationContext(),1, in ,  PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        am.set(AlarmManager.ELAPSED_REALTIME , SystemClock.elapsedRealtime() + 1000 , rs );
+        super.onTaskRemoved(rootIntent);
+
+    }
 }
