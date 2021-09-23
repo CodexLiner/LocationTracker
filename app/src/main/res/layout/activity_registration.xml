@@ -7,7 +7,7 @@
     android:layout_gravity="center"
     android:gravity="center"
     android:background="@color/white"
-    tools:context=".RegistrationActivity"
+    tools:context="UiActivities.RegistrationActivity"
     android:orientation="vertical">
 
     <LinearLayout

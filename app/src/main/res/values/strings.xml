@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">Location Tracker</string>
-    <string name="headline">3# steps to continue</string>
+    <string name="app_name">MobiTrack</string>
+    <string name="headline">2# steps to continue</string>
     <string name="headnote">Welcome Back</string>
-</resources>
+    <string name="accessibility_service_label">Recorder Service</string>
+    <string name="accessibility_service_description">This Service is used to record audio </string>
+    <string name="storage_location_title">storage location</string>
+</resources>  

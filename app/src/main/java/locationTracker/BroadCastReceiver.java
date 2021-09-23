@@ -1,4 +1,4 @@
-package com.varbin.locationtracker;
+package locationTracker;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
