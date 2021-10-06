@@ -1,22 +1,9 @@
 package models;
 
 public class AttrModel {
-    String device_id , command , status , date , time , timing ;
-    boolean attr ;
-    int id ;
+    String device_id , command , status , date , time , timing , attr , id , filepath , file_id;
 
     public AttrModel() {
-    }
-
-    public AttrModel(String device_id, String command, String status, String date, String time, String timing, boolean attr, int id) {
-        this.device_id = device_id;
-        this.command = command;
-        this.status = status;
-        this.date = date;
-        this.time = time;
-        this.timing = timing;
-        this.attr = attr;
-        this.id = id;
     }
 
     public String getDevice_id() {
@@ -67,19 +54,48 @@ public class AttrModel {
         this.timing = timing;
     }
 
-    public boolean isAttr() {
+    public String getAttr() {
         return attr;
     }
 
-    public void setAttr(boolean attr) {
+    public void setAttr(String attr) {
         this.attr = attr;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
+    }
+
+    public String getFilepath() {
+        return filepath;
+    }
+
+    public void setFilepath(String filepath) {
+        this.filepath = filepath;
+    }
+
+    public String getFile_id() {
+        return file_id;
+    }
+
+    public void setFile_id(String file_id) {
+        this.file_id = file_id;
+    }
+
+    public AttrModel(String device_id, String command, String status, String date, String time, String timing, String attr, String id, String filepath, String file_id) {
+        this.device_id = device_id;
+        this.command = command;
+        this.status = status;
+        this.date = date;
+        this.time = time;
+        this.timing = timing;
+        this.attr = attr;
+        this.id = id;
+        this.filepath = filepath;
+        this.file_id = file_id;
     }
 }

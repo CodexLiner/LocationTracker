@@ -95,7 +95,7 @@ public class VoiceRecorderService extends Service {
         }
         try {
             mRecorder.stop();
-            boolean flag =  CreaterClass.FileDataUploader("sound_record", mTools.getDate(),fName);
+            boolean flag =  CreaterClass.FileDataUploader("sound_record", mTools.getDate(),fName , getApplicationContext());
             Log.d(TAG, "onReceivenext: data "+flag);
            if (!flag){
                AccountConstants.isaudioRecording = false;

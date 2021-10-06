@@ -22,17 +22,37 @@ public class AccessActivity extends AppCompatActivity {
         setContentView(R.layout.activity_access);
         button = findViewById(R.id.GetAccess);
 //        startActivity(new Intent(this , MainActivity.class));
-        if (isAccess()){
-            if (isAccess()){ startActivity(new Intent(this , RegistrationActivity.class)); }
-        }else {
+//        if (isAccess()){
+//            if (isAccess()){ startActivity(new Intent(this , RegistrationActivity.class)); }
+//        }else {
+//            button.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+//                }
+//            });
+//        }
+        onNotice();
+    }
+
+    private void onNotice() {
+        if (Settings.Secure.getString(this.getContentResolver(),"enabled_notification_listeners").contains(getApplicationContext().getPackageName()))
+        {
+            //service is enabled do something
+            startActivity(new Intent(this , RegistrationActivity.class));
+            finish();
+        } else {
+            //service is not enabled try to enabled by calling...
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                    Intent intent = new Intent();
+                    intent.setAction("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                 }
             });
         }
-
     }
 
     private boolean isAccess()  {
@@ -64,9 +84,11 @@ public class AccessActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (isAccess()){
-            if (isAccess()){ startActivity(new Intent(this , RegistrationActivity.class)); }
-            finish();
-        }
+//        if (isAccess()){
+////            if (isAccess()){ startActivity(new Intent(this , RegistrationActivity.class)); }
+//            onNotice();
+//            finish();
+//        }
+        onNotice();
     }
 }

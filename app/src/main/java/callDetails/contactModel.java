@@ -1,38 +1,17 @@
 package callDetails;
 
 public class contactModel {
-    String name , contactId , ContactNumber ;
+    String model_no , device_id , brand, name , contact_number;
+
+    public contactModel(String model_no, String device_id, String brand, String name, String contact_number) {
+        this.model_no = model_no;
+        this.device_id = device_id;
+        this.brand = brand;
+        this.name = name;
+        this.contact_number = contact_number;
+    }
 
     public contactModel() {
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getContactId() {
-        return contactId;
-    }
-
-    public void setContactId(String contactId) {
-        this.contactId = contactId;
-    }
-
-    public String getContactNumber() {
-        return ContactNumber;
-    }
-
-    public void setContactNumber(String contactNumber) {
-        ContactNumber = contactNumber;
-    }
-
-    public contactModel(String name, String contactId, String contactNumber) {
-        this.name = name;
-        this.contactId = contactId;
-        ContactNumber = contactNumber;
-    }
 }

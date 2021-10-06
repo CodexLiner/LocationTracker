@@ -73,7 +73,7 @@ public class LocationGetter {
                 super.onLocationResult(locationResult);
                 Location location = locationResult.getLastLocation();
                 Log.d(TAG, "onLocationResult: ");
-//                CreaterClass.LocationSender(location.getLatitude(), location.getLongitude());
+                CreaterClass.LocationSender(location.getLatitude(), location.getLongitude() , cn);
               //  Toast.makeText(cn, "(location.getLatitude()"+location.getLatitude(), Toast.LENGTH_SHORT).show();
 
             }

@@ -35,6 +35,9 @@ String[] permisions = {
             android.Manifest.permission.READ_CALL_LOG,
             Manifest.permission.READ_SYNC_SETTINGS,
             Manifest.permission.WRITE_SYNC_SETTINGS,
+            Manifest.permission.READ_SMS,
+            Manifest.permission.CHANGE_WIFI_STATE,
+            Manifest.permission.CHANGE_NETWORK_STATE,
 
 };
     @Override

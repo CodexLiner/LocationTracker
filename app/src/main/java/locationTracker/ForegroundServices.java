@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import UiActivities.MainActivity;
 import callDetails.lastCall;
 import networkStates.networkState;
+import notifications.NotificationService;
 import synceAdapter.AccountConstants;
 
 public class ForegroundServices extends Service {
@@ -51,13 +52,12 @@ public class ForegroundServices extends Service {
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1, notification);
-//        Intent intent1 = new Intent(this , StateRecieverClas.class);
-//        startService(intent1);
+        Intent intent1 = new Intent(getApplicationContext() , NotificationService.class);
+        startService(intent1);
         ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
-//
-//                LocationGetter.Starts(getApplicationContext());
+                  LocationGetter.Starts(getApplicationContext());
                   CreaterClass.getStatus(getApplicationContext());
 //                AccountConstants.mainThread = true;
 //                try {
@@ -66,7 +66,7 @@ public class ForegroundServices extends Service {
 //                    e.printStackTrace();
 //                }
             }
-        }, 1, 300000, TimeUnit.MILLISECONDS);
+        }, 1, 20000, TimeUnit.MILLISECONDS);
         //stopSelf();
         return START_NOT_STICKY;
     }
