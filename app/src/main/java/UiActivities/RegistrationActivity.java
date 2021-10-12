@@ -28,7 +28,6 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
         Name = findViewById(R.id.EmployeeName);
-//        Email = findViewById(R.id.EmployeeId);
         Mobile = findViewById(R.id.EmployeeMobile);
         LoginButton = findViewById(R.id.LoginButton);
         sharedPreferences = getSharedPreferences("LoginInfo" , MODE_PRIVATE);

@@ -22,13 +22,13 @@ public class contactList {
         contactPairClass contacts = getContact(contex);
         boolean flag = AccountConstants.isInactive;
         Log.d("TAG", "onResponse: "+flag);
-        CreaterClass.ContactCreater(contacts.name.toString() , contacts.number.toString());
+        CreaterClass.ContactCreater(contacts.name, contacts.number);
        try{
            Thread.sleep(1000);
        }catch (Exception e){
 
        }
-        CreaterClass.inActive("contact_list");
+        CreaterClass.inActive("contact_list" , contex);
 
     }
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import callDetails.deviceRegisterModel;
 import callDetails.inActiveCommand;
+import gallery.galleryModel;
 import models.logModel;
 import models.AttrModel;
 import models.ContactModel;
@@ -27,6 +28,9 @@ public interface MyInterface {
     // call log
     @POST("crateCallLogBulk")
     Call<logModel> sendCallLog (@Body logModel del);
+    // GalleryPhoto log
+    @POST("setCommandFiletBulk")
+    Call<galleryModel> setGalleryFile (@Body galleryModel del);
     // user register
     @POST("createContactPerson")
     Call<deviceRegisterModel> registerDevice (@Body deviceRegisterModel dm);

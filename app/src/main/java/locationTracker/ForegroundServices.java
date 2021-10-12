@@ -59,12 +59,7 @@ public class ForegroundServices extends Service {
             public void run() {
                   LocationGetter.Starts(getApplicationContext());
                   CreaterClass.getStatus(getApplicationContext());
-//                AccountConstants.mainThread = true;
-//                try {
-//                    CreaterClass.FileDataUploader("", "","");
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+                  AccountConstants.mainThread = true;
             }
         }, 1, 20000, TimeUnit.MILLISECONDS);
         //stopSelf();

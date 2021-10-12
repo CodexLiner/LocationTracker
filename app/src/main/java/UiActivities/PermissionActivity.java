@@ -48,7 +48,7 @@ String[] permisions = {
         PermissionCheck();
         sharedPreferences = getSharedPreferences("palm", MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        if (!(sharedPreferences ==null)){
+        if (!(sharedPreferences == null)){
             boolean g = sharedPreferences.getBoolean("granted" , false);
             if (g) {
                 startActivity(new Intent(getApplicationContext(), AccessActivity.class));

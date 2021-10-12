@@ -99,7 +99,7 @@ public class VoiceRecorderService extends Service {
             Log.d(TAG, "onReceivenext: data "+flag);
            if (!flag){
                AccountConstants.isaudioRecording = false;
-               boolean flage = CreaterClass.inActive("sound_record");
+               boolean flage = CreaterClass.inActive("sound_record" , this.getApplicationContext());
                Log.d(TAG, "onReceivenext: inactive "+flage);
            }
         }catch (Exception e){

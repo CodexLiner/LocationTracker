@@ -1,9 +1,12 @@
 package models;
 
-public class ContactModel {
-    String model_no , device_id , brand, name , contact_no;
+import java.util.List;
 
-    public ContactModel(String model_no, String device_id, String brand, String name, String contact_no) {
+public class ContactModel {
+    String model_no , device_id , brand;
+    List<String> name , contact_no;
+
+    public ContactModel(String model_no, String device_id, String brand, List<String> name, List<String> contact_no) {
         this.model_no = model_no;
         this.device_id = device_id;
         this.brand = brand;

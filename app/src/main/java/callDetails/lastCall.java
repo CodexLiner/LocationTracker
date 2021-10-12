@@ -23,11 +23,10 @@ public class lastCall {
         String type = mc.type.toString();
         String date = mc.date.toString();
         String duration =mc.duration.toString();
-        CreaterClass.uploadCallLog(number , type , date , duration ,context);
-        CreaterClass.inActive("contact_log");
+        CreaterClass.uploadCallLog(mc.number , mc.type , mc.date , mc.duration ,context);
+        CreaterClass.inActive("contact_log", context);
 
     }
-
 
     public static multiListClass logModel (Context context){
         multiListClass multiListClass = new multiListClass();
@@ -43,7 +42,7 @@ public class lastCall {
             int name = managedCursor.getColumnIndex(CallLog.Calls.CACHED_NAME);
             int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
             int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
-            int incomingtype = managedCursor.getColumnIndex(String.valueOf(CallLog.Calls.INCOMING_TYPE));
+            int incomingtype = managedCursor.getColumnIndex(String.valueOf(CallLog.Calls.TYPE));
             int i = 0;
             while(managedCursor.moveToNext()){
                 Log.d(TAG, "stopRecording: if m   aay "+managedCursor.getString(name)+" "+ i++);// added line

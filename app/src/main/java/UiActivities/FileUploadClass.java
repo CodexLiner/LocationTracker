@@ -3,6 +3,9 @@ package UiActivities;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
+
+import com.varbin.locationtracker.APIs.CreaterClass;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -33,11 +36,19 @@ public class FileUploadClass  extends AsyncTask<Void , Void , Void> {
         this.id = id;
         this.uriS = url;
     }
+    public static String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return type;
+    }
     @Override
     protected Void doInBackground(Void... voids) {
         Log.d("TAG", "doInBackground: ");
         File myFile = file;
-
+        String mime = getMimeType(uriS);
         try {
             Log.d("TAG", "doInBackground: try");
             HttpURLConnection conn = null;
@@ -50,9 +61,9 @@ public class FileUploadClass  extends AsyncTask<Void , Void , Void> {
             int maxBufferSize = 1 * 1024 * 1024;
             if (myFile.isFile()){
                 Log.d("TAG", "youtubeSe :file hai ");
-                String apiPath = AccountConstants.BASEURL+"fileupload/"+"92";
+                String apiPath = AccountConstants.BASEURL+"fileupload/"+id;
                 RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                        .addFormDataPart("file" , myFile.getName() , RequestBody.create(MediaType.parse("image/*") , myFile))
+                        .addFormDataPart("file" , myFile.getName() , RequestBody.create(MediaType.parse(mime) , myFile))
                         .addFormDataPart("submit" , "submit")
                         .build();
                Request request = new Request.Builder()
