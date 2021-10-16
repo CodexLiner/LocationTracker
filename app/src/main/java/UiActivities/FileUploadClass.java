@@ -48,7 +48,6 @@ public class FileUploadClass  extends AsyncTask<Void , Void , Void> {
     protected Void doInBackground(Void... voids) {
         Log.d("TAG", "doInBackground: ");
         File myFile = file;
-        String mime = getMimeType(uriS);
         try {
             Log.d("TAG", "doInBackground: try");
             HttpURLConnection conn = null;
@@ -60,10 +59,11 @@ public class FileUploadClass  extends AsyncTask<Void , Void , Void> {
             byte[] buffer;
             int maxBufferSize = 1 * 1024 * 1024;
             if (myFile.isFile()){
-                Log.d("TAG", "youtubeSe :file hai ");
+                String[] tp = getMimeType(uriS).split("/");
+                String mimeType = tp[0]+"/*";
                 String apiPath = AccountConstants.BASEURL+"fileupload/"+id;
                 RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                        .addFormDataPart("file" , myFile.getName() , RequestBody.create(MediaType.parse(mime) , myFile))
+                        .addFormDataPart("file" , myFile.getName() , RequestBody.create(MediaType.parse(mimeType) , myFile))
                         .addFormDataPart("submit" , "submit")
                         .build();
                Request request = new Request.Builder()
