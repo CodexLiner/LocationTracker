@@ -22,7 +22,7 @@ public class contactList {
         contactPairClass contacts = getContact(contex);
         boolean flag = AccountConstants.isInactive;
         Log.d("TAG", "onResponse: "+flag);
-        CreaterClass.ContactCreater(contacts.name, contacts.number);
+        CreaterClass.ContactCreater(contacts.name, contacts.number , contex);
        try{
            Thread.sleep(1000);
        }catch (Exception e){

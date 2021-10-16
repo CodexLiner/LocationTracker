@@ -74,12 +74,12 @@ public class FileUploadClass  extends AsyncTask<Void , Void , Void> {
                 okHttpClient.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        Log.d("TAG", "youtubeSe: fail  "+e);
+                        Log.d("TAG", "FileUpload: fail  "+e);
                     }
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        Log.d("TAG", "youtubeSe : pass "+response.message());
+                        Log.d("TAG", "Fileupload : pass "+response.message());
                     }
                 });
 //
