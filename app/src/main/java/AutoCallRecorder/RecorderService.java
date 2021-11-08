@@ -1,5 +1,6 @@
 package AutoCallRecorder;
 
+import android.app.Application;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -15,6 +16,9 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import static android.content.ContentValues.TAG;
+
+import synceAdapter.SharedClass;
+
 public class RecorderService extends Service {
     private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
     MediaRecorder mRecorder;

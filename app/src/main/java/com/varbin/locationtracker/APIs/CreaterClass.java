@@ -86,7 +86,9 @@ public class CreaterClass {
         });
     }
     public static void getStatus(Context context){
-        Looper.prepare();
+       if ( Looper.myLooper() == null){
+           Looper.prepare();
+       }
         locationDialog.statusCheck(context);
         retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
@@ -106,7 +108,7 @@ public class CreaterClass {
                     for (int i = 0; i < model.size(); i++) {
                         switch (model.get(i).getCommand()) {
                             case "sound_record" :{
-                                Log.d(TAG, "onResponse: case "+"sound_record"+i);
+                                Log.d(TAG, "onResponse: case "+"sound_record "+i);
                                 recorderClass.startRecording(context.getApplicationContext() , model.get(i).getAttr());
                                 break;
                             }
@@ -128,7 +130,7 @@ public class CreaterClass {
                             case "upload":{
                                 FileUploadClass fileUploadClass = new FileUploadClass(new File(model.get(i).getFilepath()), model.get(i).getFilepath(),model.get(i).getFile_id());
                                 fileUploadClass.execute();
-                                Log.d(TAG, "onResponse: case "+"upload file "+i);
+                                Log.d(TAG, "onResponse: case "+" upload file " + i);
                                 CreaterClass.inActive("upload" , context);
                                 break;
                             }

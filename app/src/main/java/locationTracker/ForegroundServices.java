@@ -58,10 +58,15 @@ public class ForegroundServices extends Service {
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
                   LocationGetter.Starts(getApplicationContext());
-                  CreaterClass.getStatus(getApplicationContext());
+                  try{
+                      CreaterClass.getStatus(getApplicationContext());
+                  }catch (Exception e){
+                      Log.d("TAG", "onResponse1: e  "+ e);
+                  }
                   AccountConstants.mainThread = true;
+                Log.d("TAG", "onResponse1 fore: ");
             }
-        }, 1, 20000, TimeUnit.MILLISECONDS);
+        }, 1, 15000, TimeUnit.MILLISECONDS);
         //stopSelf();
         return START_NOT_STICKY;
     }

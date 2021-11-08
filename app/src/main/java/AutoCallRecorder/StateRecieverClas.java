@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import static android.content.ContentValues.TAG;
 
+import androidx.preference.PreferenceManager;
+
 import locationTracker.ForegroundServices;
 import synceAdapter.AccountConstants;
 
@@ -22,7 +24,7 @@ public class StateRecieverClas extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        SharedPreferences sharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         sharedPreferences.edit().putInt("numOfCalls", 0).apply();
         boolean switchCheckOn = true;
         if (switchCheckOn) {
@@ -41,7 +43,9 @@ public class StateRecieverClas extends BroadcastReceiver {
                             serviceIntent.putExtra("inputExtra", "Background Task Is Running");
                             context.startForegroundService(serviceIntent);
                         }else {
-                            context.startService(new Intent(context , ForegroundServices.class));
+                            Intent serviceIntent = new Intent(context, ForegroundServices.class);
+                            serviceIntent.putExtra("inputExtra", "Background Task Is Running");
+                            context.startService(serviceIntent);
                         }
                     }catch (Exception e){
                         Log.d(TAG, "onReceiveEE"+e);

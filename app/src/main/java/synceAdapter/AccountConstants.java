@@ -21,8 +21,8 @@ public class AccountConstants {
     public static final String getStatus = Build.ID;
     public static final String inActive = "setCommandInactive/";
     public static boolean isInactive;
-//    public static String BASEURL = "https://mobitracker.in/index.php/Api/";
-    public static String BASEURL = "https://mobitrack.varbin.com/index.php/Api/";
+  public static String BASEURL = "https://mobitracker.in/index.php/Api/";
+//    public static String BASEURL = "https://mobitrack.varbin.com/index.php/Api/";
     public static boolean isaudioRecording;
     public static String getStatus (Context context){
         String s = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
